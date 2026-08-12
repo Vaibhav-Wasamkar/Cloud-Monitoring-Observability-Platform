@@ -33,19 +33,7 @@ resource "aws_launch_template" "application" {
     }
   }
 
-  user_data = base64encode(<<-EOF
-    #!/bin/bash
-    set -e
-
-    apt-get update
-    apt-get install -y docker.io
-
-    systemctl enable docker
-    systemctl start docker
-
-    usermod -aG docker ubuntu
-  EOF
-  )
+  user_data = base64encode(file("${path.module}/userdata.sh"))
 }
 
 resource "aws_autoscaling_group" "application" {
@@ -62,11 +50,21 @@ resource "aws_autoscaling_group" "application" {
   ]
 
   health_check_type         = "ELB"
-  health_check_grace_period = 120
+  health_check_grace_period = 180
 
   launch_template {
     id      = aws_launch_template.application.id
-    version = "$Latest"
+    version = aws_launch_template.application.latest_version
+  }
+
+  instance_refresh {
+    strategy = "Rolling"
+
+    preferences {
+      min_healthy_percentage = 50
+      instance_warmup        = 180
+      auto_rollback          = true
+    }
   }
 
   tag {
