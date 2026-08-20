@@ -1,24 +1,19 @@
-output "monitoring_instance_id" {
-  description = "ID of the monitoring server"
-  value       = aws_instance.monitoring.id
+output "application_url" {
+  description = "URL of the application"
+  value       = "http://${aws_lb.application.dns_name}"
 }
 
-output "monitoring_public_ip" {
-  description = "Public IP of the monitoring server"
-  value       = aws_instance.monitoring.public_ip
+output "prometheus_url" {
+  description = "URL of the Prometheus server"
+  value       = "http://${aws_instance.monitoring.public_ip}:9090"
 }
 
-output "monitoring_private_ip" {
-  description = "Private IP of the monitoring server"
-  value       = aws_instance.monitoring.private_ip
+output "grafana_url" {
+  description = "URL of the Grafana server"
+  value       = "http://${aws_instance.monitoring.public_ip}:3000"
 }
 
-output "alb_dns_name" {
-  description = "DNS name of the application load balancer"
-  value       = aws_lb.application.dns_name
-}
-
-output "application_asg_name" {
-  description = "Name of the application Auto Scaling group"
-  value       = aws_autoscaling_group.application.name
+output "alertmanager_url" {
+  description = "URL of the Alertmanager server"
+  value       = "http://${aws_instance.monitoring.public_ip}:9093"
 }

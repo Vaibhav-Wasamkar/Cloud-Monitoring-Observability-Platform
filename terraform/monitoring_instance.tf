@@ -18,4 +18,11 @@ resource "aws_instance" "monitoring" {
     Role    = "monitoring"
     Project = "CloudMonitoring"
   }
+
+  user_data = templatefile(
+    "${path.module}/monitoring_userdata.sh",
+    {
+      repository_url = var.repository_url
+    }
+  )
 }

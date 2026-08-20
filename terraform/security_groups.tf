@@ -63,6 +63,14 @@ resource "aws_security_group" "application" {
   }
 
   ingress {
+    description     = "Application metrics from monitoring server"
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    security_groups = [aws_security_group.monitoring.id]
+  }
+
+  ingress {
     description     = "Node Exporter from monitoring server"
     from_port       = 9100
     to_port         = 9100

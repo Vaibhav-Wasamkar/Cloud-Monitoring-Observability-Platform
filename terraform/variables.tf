@@ -32,3 +32,8 @@ variable "key_name" {
   description = "Existing EC2 key pair"
   type        = string
 }
+
+variable "repository_url" {
+  description = "Public GitHub repository URL"
+  type        = string
+}

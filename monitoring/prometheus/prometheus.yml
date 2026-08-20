@@ -1,0 +1,103 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+  external_labels:
+    project: "cloud-monitoring-observability"
+
+scrape_configs:
+
+  # ----------------------------------------------------
+  # Prometheus itself
+  # ----------------------------------------------------
+
+  - job_name: "prometheus"
+
+    static_configs:
+      - targets:
+          - "localhost:9090"
+
+  # ----------------------------------------------------
+  # AWS EC2 Node Exporter discovery
+  # ----------------------------------------------------
+
+  - job_name: "aws-ec2-node-exporter"
+
+    ec2_sd_configs:
+      - region: "ap-south-1"
+        port: 9100
+        refresh_interval: 30s
+
+    relabel_configs:
+
+      # Only monitor application instances
+      - source_labels:
+          - "__meta_ec2_tag_Project"
+        regex: "CloudMonitoring"
+        action: keep
+
+      - source_labels:
+          - "__meta_ec2_tag_Role"
+        regex: "application"
+        action: keep
+
+      # Create useful labels
+      - source_labels:
+          - "__meta_ec2_instance_id"
+        target_label: "instance_id"
+
+      - source_labels:
+          - "__meta_ec2_instance_type"
+        target_label: "instance_type"
+
+      - source_labels:
+          - "__meta_ec2_availability_zone"
+        target_label: "availability_zone"
+
+      - source_labels:
+          - "__meta_ec2_tag_Name"
+        target_label: "instance_name"
+
+      - source_labels:
+          - "__meta_ec2_tag_Role"
+        target_label: "role"
+
+  # ----------------------------------------------------
+  # Application metrics
+  # ----------------------------------------------------
+
+  - job_name: "aws-ec2-application"
+
+    ec2_sd_configs:
+      - region: "ap-south-1"
+        port: 8080
+        refresh_interval: 30s
+
+    relabel_configs:
+
+      # Only monitor application instances
+      - source_labels:
+          - "__meta_ec2_tag_Project"
+        regex: "CloudMonitoring"
+        action: keep
+
+      - source_labels:
+          - "__meta_ec2_tag_Role"
+        regex: "application"
+        action: keep
+
+      - source_labels:
+          - "__meta_ec2_instance_id"
+        target_label: "instance_id"
+
+      - source_labels:
+          - "__meta_ec2_availability_zone"
+        target_label: "availability_zone"
+
+      - source_labels:
+          - "__meta_ec2_tag_Name"
+        target_label: "instance_name"
+
+      # The application exposes /metrics
+      - target_label: "__metrics_path__"
+        replacement: "/metrics"

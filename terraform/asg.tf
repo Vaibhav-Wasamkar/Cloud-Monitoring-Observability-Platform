@@ -33,7 +33,7 @@ resource "aws_launch_template" "application" {
     }
   }
 
-  user_data = base64encode(file("${path.module}/userdata.sh"))
+  user_data = base64encode(file("${path.module}/application_userdata.sh"))
 }
 
 resource "aws_autoscaling_group" "application" {
