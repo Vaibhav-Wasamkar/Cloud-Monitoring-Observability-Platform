@@ -5,6 +5,9 @@ global:
   external_labels:
     project: "cloud-monitoring-observability"
 
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
 scrape_configs:
 
   # ----------------------------------------------------

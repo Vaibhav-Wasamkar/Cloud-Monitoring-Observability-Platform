@@ -1,0 +1,66 @@
+groups:
+  - name: infrastructure-alerts
+    rules:
+
+      # Target availability
+      - alert: InstanceDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance {{ $labels.instance }} is down"
+          description: "Prometheus target {{ $labels.instance }} has been unreachable for more than 2 minutes."
+
+      # CPU utilization
+      - alert: HighCPUUsage
+        expr: |
+          100 - (
+            avg by (instance) (
+              rate(node_cpu_seconds_total{mode="idle"}[5m])
+            ) * 100
+          ) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage has been above 80% for more than 5 minutes."
+
+      # Memory utilization
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            1 - (
+              node_memory_MemAvailable_bytes /
+              node_memory_MemTotal_bytes
+            )
+          ) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage has been above 85% for more than 5 minutes."
+
+      # Disk utilization
+      - alert: HighDiskUsage
+        expr: |
+          (
+            1 -
+            (
+              node_filesystem_avail_bytes{
+                fstype!~"tmpfs|fuse.lxcfs|overlay"
+              }
+              /
+              node_filesystem_size_bytes{
+                fstype!~"tmpfs|fuse.lxcfs|overlay"
+              }
+            )
+          ) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk usage on {{ $labels.instance }}"
+          description: "Disk usage has been above 85% for more than 5 minutes."
