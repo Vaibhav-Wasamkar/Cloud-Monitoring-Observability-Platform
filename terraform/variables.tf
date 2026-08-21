@@ -37,3 +37,8 @@ variable "repository_url" {
   description = "Public GitHub repository URL"
   type        = string
 }
+
+variable "webhook_secret_arn" {
+  description = "ARN of the webhook secret in AWS Secrets Manager"
+  type        = string
+}

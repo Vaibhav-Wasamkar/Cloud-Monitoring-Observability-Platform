@@ -10,7 +10,7 @@ groups:
           severity: critical
         annotations:
           summary: "Instance {{ $labels.instance }} is down"
-          description: "Prometheus target {{ $labels.instance }} has been unreachable for more than 2 minutes."
+          description: "Target has been unreachable for more than 2 minutes."
 
       # CPU utilization
       - alert: HighCPUUsage

@@ -22,7 +22,8 @@ resource "aws_instance" "monitoring" {
   user_data = templatefile(
     "${path.module}/monitoring_userdata.sh",
     {
-      repository_url = var.repository_url
+      repository_url     = var.repository_url
+      webhook_secret_arn = var.webhook_secret_arn
     }
   )
 }

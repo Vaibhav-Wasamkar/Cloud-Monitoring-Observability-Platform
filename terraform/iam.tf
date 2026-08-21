@@ -42,6 +42,27 @@ resource "aws_iam_role_policy" "ec2_discovery" {
   })
 }
 
+resource "aws_iam_role_policy" "monitoring_slack_secret" {
+  name = "ReadSlackWebhookSecret"
+  role = aws_iam_role.monitoring.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Effect = "Allow"
+
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+
+        Resource = var.webhook_secret_arn
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "monitoring_ssm" {
   role       = aws_iam_role.monitoring.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"

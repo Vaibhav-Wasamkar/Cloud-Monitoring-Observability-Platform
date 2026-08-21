@@ -14,9 +14,21 @@ apt-get update
 # ============================================================
 
 apt-get install -y \
+	git \
 	docker.io \
 	docker-compose-v2 \
-	git
+	jq \
+	curl \
+	unzip
+
+cd /tmp
+
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" \
+	-o "awscliv2.zip"
+
+unzip -q awscliv2.zip
+
+sudo ./aws/install
 
 # ============================================================
 # 3. Enable Docker
@@ -54,6 +66,17 @@ git checkout
 # ============================================================
 
 cd "$MONITORING_DIR"
+
+SECRET_JSON=$(aws secretsmanager get-secret-value \
+	--secret-id "${webhook_secret_arn}" \
+	--region ap-south-1 \
+	--query SecretString \
+	--output text)
+
+SLACK_WEBHOOK_URL=$(echo "$SECRET_JSON" | jq -r '.SLACK_WEBHOOK_URL')
+
+sed -i "s|SLACK_WEBHOOK_URL_PLACEHOLDER|$${SLACK_WEBHOOK_URL}|g" \
+	alertmanager/alertmanager.yml
 
 sudo docker compose up -d
 

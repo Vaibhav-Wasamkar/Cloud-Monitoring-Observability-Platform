@@ -7,3 +7,4 @@ instance_type       = "t3.micro"
 
 key_name = "YOUR_KEY_PAIR_NAME"
 repository_url = "YOUR_PUBLIC_GITHUB_REPO_URL"
+webhook_secret_arn = "YOUR_WEBHOOK_SECRET_ARN"
